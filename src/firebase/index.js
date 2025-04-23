@@ -1,7 +1,10 @@
 
 import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, signOut  } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword,signInWithEmailAndPassword, signOut, onAuthStateChanged,updateProfile,sendEmailVerification } from "firebase/auth";
 import { ToastContainer, toast } from 'react-toastify';
+import { store } from "../redux/store";
+import { login as loginHandle,logout as logoutHandle} from "../redux/Slice/authSlice";
+
 
 
 const firebaseConfig = {
@@ -16,7 +19,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-const auth = getAuth();
+export const auth = getAuth();
 
 
 //register
@@ -53,6 +56,37 @@ export const logout=async()=>{
         toast.error(error.message)
     }
 }
+
+export const update=async data =>{
+try { 
+  await updateProfile(auth.currentUser,data)
+  return true
+} catch (error){
+  toast.error(error.message)
+}
+ }
+
+ export const handleEmailVerification = async () => {
+  try { 
+    await sendEmailVerification(auth.currentUser) // bu Firebase'den gelen fonksiyon
+    toast.success(`Doğrulama maili ${auth.currentUser.email} adresine gönderildi, lütfen kontrol ediniz!`)
+  } catch (error) {
+    toast.error(error.message)
+  }
+}
+
+  
+
+onAuthStateChanged(auth,(user)=>{
+  if(user){
+    store.dispatch(loginHandle(user))
+  } else{
+    store.dispatch(logoutHandle())
+    
+  }
+})
+
+
 
 
 

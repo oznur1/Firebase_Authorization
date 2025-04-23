@@ -1,9 +1,12 @@
 import React from 'react'
 import { useState } from 'react'
 import { login } from '../firebase'
+import { useNavigate } from 'react-router-dom'
 
 
 const Login = () => {
+  const navigate=useNavigate()
+   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -11,7 +14,10 @@ const Login = () => {
     e.preventDefault()
    
     const user =await login(email,password)
-    console.log(user)
+   
+    navigate("/",{
+      replace:true
+    })
   };
 
   return (
